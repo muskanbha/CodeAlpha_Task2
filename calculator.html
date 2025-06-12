@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calculator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f0f2f5;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .calculator {
+      background: #222;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      width: 300px;
+    }
+
+    .display {
+      background: #000;
+      color: #0f0;
+      font-size: 2rem;
+      text-align: right;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      word-wrap: break-word;
+      min-height: 50px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .buttons button {
+      padding: 20px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 10px;
+      background: #444;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .buttons button:hover {
+      background: #666;
+    }
+
+    .buttons .equals {
+      background: #28a745;
+      color: #fff;
+    }
+
+    .buttons .equals:hover {
+      background: #218838;
+    }
+
+    .buttons .clear {
+      background: #dc3545;
+    }
+
+    .buttons .clear:hover {
+      background: #c82333;
+    }
+
+    .buttons .operator {
+      background: #007bff;
+    }
+
+    .buttons .operator:hover {
+      background: #0069d9;
+    }
+
+    @media (max-width: 360px) {
+      .calculator {
+        width: 90%;
+      }
+
+      .buttons button {
+        padding: 15px;
+        font-size: 1rem;
+      }
+
+      .display {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="calculator">
+  <div class="display" id="display">0</div>
+  <div class="buttons">
+    <button class="clear" onclick="clearDisplay()">C</button>
+    <button onclick="deleteLast()">←</button>
+    <button class="operator" onclick="appendOperator('%')">%</button>
+    <button class="operator" onclick="appendOperator('/')">÷</button>
+
+    <button onclick="appendNumber('7')">7</button>
+    <button onclick="appendNumber('8')">8</button>
+    <button onclick="appendNumber('9')">9</button>
+    <button class="operator" onclick="appendOperator('*')">×</button>
+
+    <button onclick="appendNumber('4')">4</button>
+    <button onclick="appendNumber('5')">5</button>
+    <button onclick="appendNumber('6')">6</button>
+    <button class="operator" onclick="appendOperator('-')">−</button>
+
+    <button onclick="appendNumber('1')">1</button>
+    <button onclick="appendNumber('2')">2</button>
+    <button onclick="appendNumber('3')">3</button>
+    <button class="operator" onclick="appendOperator('+')">+</button>
+
+    <button onclick="appendNumber('0')">0</button>
+    <button onclick="appendNumber('.')">.</button>
+    <button class="equals" style="grid-column: span 2;" onclick="calculate()">=</button>
+  </div>
+</div>
+
+<script>
+  const display = document.getElementById('display');
+  let currentInput = '';
+
+  function appendNumber(number) {
+    if (currentInput === '0' && number !== '.') {
+      currentInput = number;
+    } else {
+      currentInput += number;
+    }
+    updateDisplay();
+  }
+
+  function appendOperator(operator) {
+    if (currentInput === '') return;
+    const lastChar = currentInput[currentInput.length - 1];
+    if ('+-*/%'.includes(lastChar)) {
+      currentInput = currentInput.slice(0, -1) + operator;
+    } else {
+      currentInput += operator;
+    }
+    updateDisplay();
+  }
+
+  function clearDisplay() {
+    currentInput = '';
+    updateDisplay();
+  }
+
+  function deleteLast() {
+    currentInput = currentInput.slice(0, -1);
+    updateDisplay();
+  }
+
+  function calculate() {
+    try {
+      let result = eval(currentInput.replace(/÷/g, '/').replace(/×/g, '*'));
+      currentInput = result.toString();
+    } catch {
+      currentInput = 'Error';
+    }
+    updateDisplay();
+  }
+
+  function updateDisplay() {
+    display.textContent = currentInput || '0';
+  }
+
+  // Keyboard support
+  window.addEventListener('keydown', (e) => {
+    if (/\d/.test(e.key)) appendNumber(e.key);
+    else if (['+', '-', '*', '/'].includes(e.key)) appendOperator(e.key);
+    else if (e.key === 'Enter') calculate();
+    else if (e.key === 'Backspace') deleteLast();
+    else if (e.key === 'Escape') clearDisplay();
+    else if (e.key === '.') appendNumber('.');
+  });
+</script>
+
+</body>
+</html>
